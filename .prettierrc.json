@@ -1,0 +1,8 @@
+{
+  "importOrder": ["^react/?(.*)$", "^next/?(.*)$", "<THIRD_PARTY_MODULES>"],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+
+  "singleQuote": true,
+  "tabWidth": 2
+}
