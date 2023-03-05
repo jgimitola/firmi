@@ -4,7 +4,7 @@ import Head from 'next/head';
 
 import createEmotionCache from '../lib/createEmotionCache';
 import theme from '../lib/theme';
-import { CacheProvider } from '@emotion/react';
+import { CacheProvider, Global, css } from '@emotion/react';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 
@@ -16,9 +16,21 @@ export default function MyApp(props) {
 
   return (
     <CacheProvider value={emotionCache}>
+      <Global
+        styles={css`
+          body {
+            background-color: #f0f0f0 !important;
+          }
+        `}
+      />
+
       <Head>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <title>Firmi App</title>
+        <meta name="description" content="Satisfaction form webapp" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
