@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 import Head from 'next/head';
 
-import styled from '@emotion/styled';
 import {
   Box,
   Button,
@@ -11,6 +10,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+
+import useHelloWorld from '@/modules/hooks/useHelloWorld';
+import styled from '@emotion/styled';
 
 const Main = styled(Box)`
   height: 100svh;
@@ -71,6 +73,9 @@ const Login = () => {
   };
 
   const buttonDisabled = !credentials.email || !credentials.password;
+
+  const helloWorldInfo = useHelloWorld();
+  const response = helloWorldInfo.data.data;
 
   return (
     <>
