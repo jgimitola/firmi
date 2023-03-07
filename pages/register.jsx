@@ -11,7 +11,8 @@ import {
   Typography,
 } from '@mui/material';
 
-import useHelloWorld from '@/modules/hooks/useHelloWorld';
+import NextLink from '@/modules/components/Link';
+import Select from '@/modules/components/Select';
 import styled from '@emotion/styled';
 
 const Main = styled(Box)`
@@ -22,7 +23,9 @@ const Main = styled(Box)`
   align-items: center;
 `;
 
-const LoginContainer = styled(Paper)`
+const RegisterContainer = styled(Paper)`
+  max-height: 100svh;
+
   padding-inline: 4rem;
   padding-block: 2rem;
   padding-block-end: 4rem;
@@ -48,34 +51,66 @@ const Title = styled(Typography)`
 `;
 
 const Form = styled(Box)`
+  padding-block: 1rem;
+
   display: flex;
   flex-direction: column;
+
+  overflow-y: auto;
 
   gap: 1rem;
 `;
 
+const initialData = {
+  accountType: { id: 'RESTAURANT', label: 'Restaurante' },
+  fullname: '',
+  age: '',
+  gender: { label: 'Femenino', id: 'F' },
+  restaurantName: '',
+  email: '',
+  password: '',
+  repeatPassword: '',
+};
+
+const accountTypeOptions = [
+  { label: 'Restaurante', id: 'RESTAURANT' },
+  { label: 'Cliente', id: 'CLIENT' },
+];
+
+const genderOptions = [
+  { label: 'Femenino', id: 'F' },
+  { label: 'Masculino', id: 'M' },
+  { label: 'Otro', id: 'O' },
+];
+
+const equalityOptionValue = (option, value) => option.id === value.id;
+
 const Register = () => {
-  const [credentials, setCredentials] = useState({
-    email: undefined,
-    password: undefined,
-  });
+  const [data, setData] = useState({ ...initialData });
+
+  const handleSelectableChange = (name, value) => {
+    setData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleFieldChange = (evt) => {
-    setCredentials((prev) => ({
-      ...prev,
-      [evt.target.name]: evt.target.value,
-    }));
+    setData((prev) => ({ ...prev, [evt.target.name]: evt.target.value }));
   };
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
-    console.log(credentials);
+    console.log(data);
   };
 
-  const buttonDisabled = !credentials.email || !credentials.password;
-
-  const helloWorldInfo = useHelloWorld();
-  const response = helloWorldInfo.data.data;
+  const clientRegister = data.accountType.id === 'CLIENT';
+  const restaurantRegister = data.accountType.id === 'RESTAURANT';
+  const passwordsMatch = data.password === data.repeatPassword;
+  const buttonDisabled =
+    (clientRegister &&
+      (!data.accountType || !data.fullname || !data.age || !data.gender)) ||
+    (restaurantRegister && (!data.accountType || !data.restaurantName)) ||
+    !data.email ||
+    !data.password ||
+    !data.repeatPassword;
 
   return (
     <>
@@ -85,22 +120,88 @@ const Register = () => {
 
       <Main component="main">
         <Container maxWidth="sm">
-          <LoginContainer>
-            <Title component="h1">Inicio de Sesión</Title>
+          <RegisterContainer>
+            <Title component="h1">Registro</Title>
 
             <Form component="form" onSubmit={handleSubmit}>
+              <Select
+                name="accountType"
+                label="Tipo de cuenta"
+                value={data.accountType}
+                onChange={(_, value) =>
+                  handleSelectableChange('accountType', value)
+                }
+                options={accountTypeOptions}
+                isOptionEqualToValue={equalityOptionValue}
+              />
+
+              {clientRegister && (
+                <>
+                  <TextField
+                    name="fullname"
+                    value={data.fullname}
+                    label="Nombre completo"
+                    onChange={handleFieldChange}
+                  />
+                  <TextField
+                    name="age"
+                    value={data.age}
+                    type="number"
+                    label="Edad"
+                    onChange={handleFieldChange}
+                  />
+                  <Select
+                    name="gender"
+                    label="Género"
+                    value={data.gender}
+                    onChange={(_, value) =>
+                      handleSelectableChange('gender', value)
+                    }
+                    options={genderOptions}
+                    isOptionEqualToValue={equalityOptionValue}
+                  />
+                </>
+              )}
+
+              {restaurantRegister && (
+                <TextField
+                  name="restaurantName"
+                  value={data.restaurantName}
+                  label="Nombre del restaurante"
+                  onChange={handleFieldChange}
+                />
+              )}
+
               <TextField
                 name="email"
+                value={data.email}
                 type="email"
                 label="Correo electrónico"
                 onChange={handleFieldChange}
               />
               <TextField
                 name="password"
+                value={data.password}
                 type="password"
                 label="Contraseña"
                 onChange={handleFieldChange}
+                error={!passwordsMatch}
+                helperText={!passwordsMatch && 'Las contraseñas no coinciden'}
               />
+              <TextField
+                name="repeatPassword"
+                value={data.repeatPassword}
+                type="password"
+                label="Repetir Contraseña"
+                onChange={handleFieldChange}
+                error={!passwordsMatch}
+                helperText={!passwordsMatch && 'Las contraseñas no coinciden'}
+              />
+
+              <Typography align="center">
+                ¿Ya estás registrado?{' '}
+                <NextLink href={{ pathname: '/login' }}>Inicia sesión</NextLink>
+              </Typography>
 
               <Button
                 type="submit"
@@ -108,10 +209,10 @@ const Register = () => {
                 disabled={buttonDisabled}
                 sx={{ mt: 2 }}
               >
-                INICIAR SESIÓN
+                Regístrate
               </Button>
             </Form>
-          </LoginContainer>
+          </RegisterContainer>
         </Container>
       </Main>
     </>

@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import NextLink from '@/modules/components/Link';
 import useHelloWorld from '@/modules/hooks/useHelloWorld';
 import styled from '@emotion/styled';
 
@@ -56,8 +57,8 @@ const Form = styled(Box)`
 
 const Login = () => {
   const [credentials, setCredentials] = useState({
-    email: undefined,
-    password: undefined,
+    email: '',
+    password: '',
   });
 
   const handleFieldChange = (evt) => {
@@ -91,16 +92,30 @@ const Login = () => {
             <Form component="form" onSubmit={handleSubmit}>
               <TextField
                 name="email"
+                value={credentials.email}
                 type="email"
                 label="Correo electrónico"
                 onChange={handleFieldChange}
               />
               <TextField
                 name="password"
+                value={credentials.password}
                 type="password"
                 label="Contraseña"
                 onChange={handleFieldChange}
               />
+
+              <Typography align="center">
+                ¿No estás registrado?{' '}
+                <NextLink
+                  href={{
+                    pathname: '/register',
+                    query: { rstId: undefined },
+                  }}
+                >
+                  Regístrate
+                </NextLink>
+              </Typography>
 
               <Button
                 type="submit"
