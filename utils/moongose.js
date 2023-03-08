@@ -1,6 +1,6 @@
 import {connect, connection} from 'mongoose';
 
-async function dbConnect(){
+export async function dbConnect(){
 
     const db = await connect(process.env.MONGODB_URL);
 

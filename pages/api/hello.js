@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
-import moduleName from '../../utils/moongose'
+import {dbConnect} from '../../utils/moongose'
 
 dbConnect();
 
