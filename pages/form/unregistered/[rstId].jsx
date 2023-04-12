@@ -40,7 +40,9 @@ const FormWrapper = styled(Paper)`
 
 const AnswersWrapper = styled(Box)``;
 
-const Question = styled(Typography)``;
+const Question = styled(Typography)`
+  font-weight: 600;
+`;
 
 const QuestionWrapper = styled(Box)`
   margin-block-end: 2rem;
