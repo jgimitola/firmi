@@ -78,24 +78,6 @@ const CtaText = styled(Typography)`
   }
 `;
 
-const FormTypeWrapper = styled(Box)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-
-  margin-block-start: 1rem;
-`;
-
-const ConfigLabel = styled(Typography)`
-  font-size: 1rem;
-  text-align: center;
-
-  ${({ theme }) => theme.breakpoints.down('sm')} {
-    font-size: 0.7rem;
-  }
-`;
-
 const ActionsWrapper = styled(Box)`
   display: flex;
   justify-content: center;
@@ -152,12 +134,6 @@ const Dashboard = () => {
           <CtaText>
             Facilítales el código QR para que compartan su opinión
           </CtaText>
-
-          <FormTypeWrapper>
-            <ConfigLabel>Rápida</ConfigLabel>
-            <Switch defaultChecked size={small ? 'small' : undefined} />
-            <ConfigLabel>Detallada</ConfigLabel>
-          </FormTypeWrapper>
         </QRConfigContainer>
 
         <ActionsWrapper>
