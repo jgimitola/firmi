@@ -1,23 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import Link from 'next/link';
-
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import {
   Box,
   Button,
   Container,
   FormControlLabel,
-  List,
-  ListItem,
-  ListItemText,
   Paper,
   Radio,
   RadioGroup,
   Typography,
-  useMediaQuery,
 } from '@mui/material';
-import { useTheme } from '@mui/system';
 
 import styled from '@emotion/styled';
 
@@ -52,38 +44,72 @@ const Options = styled(RadioGroup)`
   flex-direction: row;
 `;
 
-const UnregisteredForm = () => {
-  const theme = useTheme();
+const questions = [
+  {
+    key: 'firstQuestion',
+    prompt: 'La entrega de su servicio fue oportuna o a tiempo',
+  },
+  {
+    key: 'secondQuestion',
+    prompt: 'La calidad del Producto fue lo es esperado',
+  },
+];
 
-  const small = useMediaQuery(theme.breakpoints.down('sm'));
+const UnregisteredForm = () => {
+  const [answers, setAnswers] = useState({
+    ...questions.reduce(
+      (obj, question) => ({
+        ...obj,
+        [question.key]: null,
+      }),
+      {}
+    ),
+  });
+
+  const handleFieldChange = (evt) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [evt.target.name]: evt.target.value,
+    }));
+  };
+
+  const handleSubmit = () => {
+    console.log(answers);
+  };
+
+  const buttonDisabled = Object.entries(answers).reduce(
+    (disabled, [_, value]) => disabled || !Boolean(value),
+    false
+  );
 
   return (
     <Main>
       <Container maxWidth="md">
         <FormWrapper>
-          <QuestionWrapper>
-            <Question>
-              La entrega de su servicio fue oportuna o a tiempo
-            </Question>
-            <AnswersWrapper>
-              <Options>
-                <FormControlLabel value="1" control={<Radio />} label="Sí" />
-                <FormControlLabel value="0" control={<Radio />} label="No" />
-              </Options>
-            </AnswersWrapper>
-          </QuestionWrapper>
-
-          <QuestionWrapper>
-            <Question>La calidad del Producto fue lo es esperado.</Question>
-            <Options>
-              <FormControlLabel value="1" control={<Radio />} label="Sí" />
-              <FormControlLabel value="0" control={<Radio />} label="No" />
-            </Options>
-          </QuestionWrapper>
+          {questions.map((question) => (
+            <QuestionWrapper key={`question-${question.key}`}>
+              <Question>{question.prompt}</Question>
+              <AnswersWrapper>
+                <Options
+                  name={question.key}
+                  value={answers[question.key]}
+                  onChange={handleFieldChange}
+                >
+                  <FormControlLabel value="1" control={<Radio />} label="Sí" />
+                  <FormControlLabel value="0" control={<Radio />} label="No" />
+                </Options>
+              </AnswersWrapper>
+            </QuestionWrapper>
+          ))}
         </FormWrapper>
 
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Button variant="contained" sx={{ margin: '0 auto' }}>
+          <Button
+            variant="contained"
+            disabled={buttonDisabled}
+            onClick={handleSubmit}
+            sx={{ margin: '0 auto' }}
+          >
             Enviar
           </Button>
         </Box>
