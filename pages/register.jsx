@@ -105,8 +105,6 @@ const Register = () => {
   const handleSubmit = async (evt) => {
     evt.preventDefault();
 
-    console.log(data);
-
     await signUpMutation.mutateAsync({
       ...data,
       name: data.accountType.id === 'CLIENT' ? data.name : data.restaurantName,

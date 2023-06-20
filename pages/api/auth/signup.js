@@ -28,13 +28,14 @@ export default async function handler(req, res) {
       }
 
       if (accountType === 'RESTAURANT') {
-        const { name, address, phone, email } = req.body;
+        const { name, address, phone, email, password } = req.body;
 
         await Restaurant.create({
           name,
           address,
           phone,
           email,
+          password,
         });
 
         return res.status(201).json({
