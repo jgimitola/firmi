@@ -11,6 +11,9 @@ import {
   Typography,
 } from '@mui/material';
 
+import dbConnect from '@/lib/dbConnect';
+import Restaurant from '@/models/Restaurant';
+import User from '@/models/User';
 import NextLink from '@/modules/components/Link';
 import useHelloWorld from '@/modules/hooks/useHelloWorld';
 import styled from '@emotion/styled';
@@ -55,7 +58,7 @@ const Form = styled(Box)`
   gap: 1rem;
 `;
 
-const Login = () => {
+const Login = (users) => {
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
@@ -70,13 +73,39 @@ const Login = () => {
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
-    console.log(credentials);
+
+    const user = users.users.find((user) => user.mail === credentials.email);
+    if (user) {
+      // check password
+      if (user.password === credentials.password) {
+        // redirect to home
+        window.location.href = 'private/client';
+      } else {
+        // show error
+        alert('Contraseña incorrecta');
+      }
+    } else {
+      const restaurant = users.restaurants.find(
+        (restaurant) => restaurant.mail === credentials.email
+      );
+      if (restaurant) {
+        // check password
+        if (restaurant.password === credentials.password) {
+          // redirect to home
+          window.location.href = 'private/restaurant';
+        } else {
+          // show error
+          alert('Contraseña incorrecta');
+        }
+      } else {
+        // show error
+        alert('Usuario no encontrado');
+      }
+    }
   };
 
   const buttonDisabled = !credentials.email || !credentials.password;
 
-  const helloWorldInfo = useHelloWorld();
-  const response = helloWorldInfo.data.data;
 
   return (
     <>
@@ -134,3 +163,33 @@ const Login = () => {
 };
 
 export default Login;
+
+export async function getServerSideProps() {
+  try {
+    await dbConnect();
+
+    const res = await User.find({});
+
+    const users = res.map((doc) => {
+      const user = doc.toObject();
+      user._id = user._id.toString();
+      return user;
+    });
+
+    const resRestautant = await Restaurant.find({});
+    const restaurants = resRestautant.map((doc) => {
+      const restaurant = doc.toObject();
+      restaurant._id = restaurant._id.toString();
+      return restaurant;
+    });
+
+    return {
+      props: {
+        users: JSON.parse(JSON.stringify(users)),
+        restaurants: JSON.parse(JSON.stringify(restaurants)),
+      },
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
