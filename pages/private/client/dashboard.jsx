@@ -1,22 +1,17 @@
-import React from 'react';
-
 import Link from 'next/link';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import {
-  Box,
-  Button,
-  Container,
-  List,
-  ListItem,
-  ListItemText,
-  Paper,
-  Typography,
-  useMediaQuery,
-} from '@mui/material';
+import { useMediaQuery } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/system';
 
-import useFetchCharts from '@/modules/hooks/useFetchCharts';
 import styled from '@emotion/styled';
 
 const Main = styled(Box)`

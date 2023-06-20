@@ -2,20 +2,17 @@ import React, { useState } from 'react';
 
 import Head from 'next/head';
 
-import {
-  Box,
-  Button,
-  Container,
-  Paper,
-  TextField,
-  Typography,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 
 import dbConnect from '@/lib/dbConnect';
 import Restaurant from '@/models/Restaurant';
 import User from '@/models/User';
 import NextLink from '@/modules/components/Link';
-import useHelloWorld from '@/modules/hooks/useHelloWorld';
 import styled from '@emotion/styled';
 
 const Main = styled(Box)`

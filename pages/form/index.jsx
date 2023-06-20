@@ -1,9 +1,11 @@
-import React from 'react';
-
 import Head from 'next/head';
 import Link from 'next/link';
 
-import { Box, Button, Container, Paper, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 
 import styled from '@emotion/styled';
 

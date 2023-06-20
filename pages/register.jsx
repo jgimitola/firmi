@@ -2,14 +2,12 @@ import React, { useState } from 'react';
 
 import Head from 'next/head';
 
-import {
-  Box,
-  Button,
-  Container,
-  Paper,
-  TextField,
-  Typography,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 
 import NextLink from '@/modules/components/Link';
 import Select from '@/modules/components/Select';

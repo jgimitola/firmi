@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-import {
-  Box,
-  Button,
-  Container,
-  FormControlLabel,
-  Paper,
-  Radio,
-  RadioGroup,
-  Typography,
-} from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Paper from '@mui/material/Paper';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import Typography from '@mui/material/Typography';
 
 import styled from '@emotion/styled';
 
