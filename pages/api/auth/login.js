@@ -37,7 +37,10 @@ export default async function handler(req, res) {
           });
         }
 
-        const token = await signJWT({ _id: restaurant.id });
+        const token = await signJWT({
+          _id: restaurant.id,
+          accountType: 'RESTAURANT',
+        });
 
         setCookie(res, 'firmi-cookie', token, {
           httpOnly: true,
@@ -45,12 +48,14 @@ export default async function handler(req, res) {
           maxAge: TOKEN_EXPIRATION_TIME,
         });
 
-        return res
-          .status(200)
-          .json({ success: true, messages: ['Successfull login'], data: null });
+        return res.status(200).json({
+          success: true,
+          messages: ['Successfull login'],
+          data: { accountType: 'RESTAURANT' },
+        });
       }
 
-      const token = await signJWT({ _id: user.id });
+      const token = await signJWT({ _id: user.id, accountType: 'CLIENT' });
 
       setCookie(res, 'firmi-cookie', token, {
         httpOnly: true,
@@ -58,9 +63,11 @@ export default async function handler(req, res) {
         maxAge: TOKEN_EXPIRATION_TIME,
       });
 
-      return res
-        .status(200)
-        .json({ success: true, messages: ['Successfull login'], data: null });
+      return res.status(200).json({
+        success: true,
+        messages: ['Successfull login'],
+        data: { accountType: 'CLIENT' },
+      });
     } catch (error) {
       return res.status(500).json({
         data: null,

@@ -11,6 +11,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import useLogin from '@/modules/auth/hooks/useLogin';
+import isAuth from '@/modules/auth/lib/isAuth';
 import NextLink from '@/modules/components/Link';
 import styled from '@emotion/styled';
 
@@ -74,10 +75,15 @@ const Login = (users) => {
   const handleSubmit = async (evt) => {
     evt.preventDefault();
 
-    await loginMutation.mutateAsync(credentials);
+    const { data } = await loginMutation.mutateAsync(credentials);
 
-    router.push('/private/client/dashboard');
-    /* router.push('/private/restaurant/dashboard'); */
+    if (data.data.accountType === 'CLIENT') {
+      router.push('/private/client/dashboard');
+    }
+
+    if (data.data.accountType === 'RESTAURANT') {
+      router.push('/private/restaurant/dashboard');
+    }
   };
 
   const buttonDisabled = !credentials.email || !credentials.password;
@@ -111,14 +117,7 @@ const Login = (users) => {
 
               <Typography align="center">
                 ¿No estás registrado?{' '}
-                <NextLink
-                  href={{
-                    pathname: '/register',
-                    query: { rstId: undefined },
-                  }}
-                >
-                  Regístrate
-                </NextLink>
+                <NextLink href={{ pathname: '/register' }}>Regístrate</NextLink>
               </Typography>
 
               <Button
@@ -138,3 +137,28 @@ const Login = (users) => {
 };
 
 export default Login;
+
+export const getServerSideProps = async (ctx) => {
+  const token = ctx.req.cookies['firmi-cookie'] || '';
+
+  const { authenticated, decoded } = await isAuth(token);
+
+  try {
+    if (authenticated)
+      return {
+        redirect: {
+          destination:
+            decoded?.accountType === 'CLIENT'
+              ? '/private/client/dashboard'
+              : '/private/restaurant/dashboard',
+          permanent: false,
+        },
+      };
+
+    return { props: {} };
+  } catch (error) {
+    console.log(error);
+  }
+
+  return { props: {} };
+};
