@@ -1,6 +1,12 @@
 import mongoose from 'mongoose';
 
 const QuestionSchema = new mongoose.Schema({
+  key: {
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: 50,
+  },
   question: {
     type: String,
     required: true,
