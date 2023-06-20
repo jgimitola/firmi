@@ -1,16 +1,15 @@
 import QRCode from 'react-qr-code';
 
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import DownloadIcon from '@mui/icons-material/Download';
-import { useMediaQuery } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/system';
 
+import useLogout from '@/modules/auth/hooks/useLogout';
 import styled from '@emotion/styled';
 
 const Main = styled(Box)`
@@ -108,9 +107,15 @@ const Circle = styled(Box)`
 `;
 
 const Dashboard = () => {
-  const theme = useTheme();
+  const router = useRouter();
 
-  const small = useMediaQuery(theme.breakpoints.down('sm'));
+  const logoutMutation = useLogout();
+
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync();
+
+    router.push('/login');
+  };
 
   return (
     <Main>
@@ -153,10 +158,9 @@ const Dashboard = () => {
 
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Button
-            href="/login"
             variant="outlined"
-            LinkComponent={Link}
             sx={{ margin: '0 auto' }}
+            onClick={handleLogout}
           >
             Cerrar Sesión
           </Button>

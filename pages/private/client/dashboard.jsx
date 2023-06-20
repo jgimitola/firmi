@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useMediaQuery } from '@mui/material';
@@ -12,6 +12,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/system';
 
+import useLogout from '@/modules/auth/hooks/useLogout';
 import styled from '@emotion/styled';
 
 const Main = styled(Box)`
@@ -66,9 +67,19 @@ const RecentList = styled(List)`
 `;
 
 const Dashboard = () => {
+  const router = useRouter();
+
   const theme = useTheme();
 
   const small = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const logoutMutation = useLogout();
+
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync();
+
+    router.push('/login');
+  };
 
   const recentForms = [
     '5P - Donde pablo - 24/08/2023',
@@ -121,10 +132,9 @@ const Dashboard = () => {
 
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Button
-            href="/login"
             variant="outlined"
-            LinkComponent={Link}
             sx={{ margin: '0 auto' }}
+            onClick={handleLogout}
           >
             Cerrar Sesión
           </Button>
