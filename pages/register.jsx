@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -9,6 +10,7 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
+import useSignUp from '@/modules/auth/hooks/useSignUp';
 import NextLink from '@/modules/components/Link';
 import Select from '@/modules/components/Select';
 import styled from '@emotion/styled';
@@ -61,10 +63,12 @@ const Form = styled(Box)`
 
 const initialData = {
   accountType: { id: 'RESTAURANT', label: 'Restaurante' },
-  fullname: '',
+  name: '',
   age: '',
   gender: { label: 'Femenino', id: 'F' },
   restaurantName: '',
+  address: '',
+  phone: '',
   email: '',
   password: '',
   repeatPassword: '',
@@ -84,7 +88,11 @@ const genderOptions = [
 const equalityOptionValue = (option, value) => option.id === value.id;
 
 const Register = () => {
+  const router = useRouter();
+
   const [data, setData] = useState({ ...initialData });
+
+  const signUpMutation = useSignUp();
 
   const handleSelectableChange = (name, value) => {
     setData((prev) => ({ ...prev, [name]: value }));
@@ -94,18 +102,33 @@ const Register = () => {
     setData((prev) => ({ ...prev, [evt.target.name]: evt.target.value }));
   };
 
-  const handleSubmit = (evt) => {
+  const handleSubmit = async (evt) => {
     evt.preventDefault();
+
     console.log(data);
+
+    await signUpMutation.mutateAsync({
+      ...data,
+      name: data.accountType.id === 'CLIENT' ? data.name : data.restaurantName,
+      accountType: data.accountType.id,
+      gender: data.gender.id,
+    });
+
+    router.push('/login');
   };
 
   const clientRegister = data.accountType.id === 'CLIENT';
   const restaurantRegister = data.accountType.id === 'RESTAURANT';
   const passwordsMatch = data.password === data.repeatPassword;
+
   const buttonDisabled =
     (clientRegister &&
-      (!data.accountType || !data.fullname || !data.age || !data.gender)) ||
-    (restaurantRegister && (!data.accountType || !data.restaurantName)) ||
+      (!data.accountType || !data.name || !data.age || !data.gender)) ||
+    (restaurantRegister &&
+      (!data.accountType ||
+        !data.restaurantName ||
+        !data.address ||
+        !data.phone)) ||
     !data.email ||
     !data.password ||
     !data.repeatPassword;
@@ -136,8 +159,8 @@ const Register = () => {
               {clientRegister && (
                 <>
                   <TextField
-                    name="fullname"
-                    value={data.fullname}
+                    name="name"
+                    value={data.name}
                     label="Nombre completo"
                     onChange={handleFieldChange}
                   />
@@ -162,12 +185,28 @@ const Register = () => {
               )}
 
               {restaurantRegister && (
-                <TextField
-                  name="restaurantName"
-                  value={data.restaurantName}
-                  label="Nombre del restaurante"
-                  onChange={handleFieldChange}
-                />
+                <>
+                  <TextField
+                    name="restaurantName"
+                    value={data.restaurantName}
+                    label="Nombre del restaurante"
+                    onChange={handleFieldChange}
+                  />
+                  <TextField
+                    name="address"
+                    value={data.address}
+                    label="Dirección"
+                    onChange={handleFieldChange}
+                  />
+                  <TextField
+                    type="tel"
+                    inputProps={{ pattern: '[0-9]{3}[0-9]{3}[0-9]{4}' }}
+                    name="phone"
+                    value={data.phone}
+                    label="Teléfono"
+                    onChange={handleFieldChange}
+                  />
+                </>
               )}
 
               <TextField

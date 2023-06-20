@@ -3,17 +3,18 @@ import Restaurant from '@/models/Restaurant';
 import User from '@/models/User';
 
 export default async function handler(req, res) {
-  dbConnect();
+  await dbConnect();
 
-  // POST /api/signup
+  const method = req.method;
 
-  if (req.method === 'POST') {
+  if (method === 'POST') {
     try {
-      const isUser = req.body.isUser;
-      if (isUser) {
+      const accountType = req.body.accountType;
+
+      if (accountType === 'CLIENT') {
         const { name, email, password, age, gender } = req.body;
 
-        const user = await User.create({
+        await User.create({
           name,
           email,
           password,
@@ -21,22 +22,38 @@ export default async function handler(req, res) {
           gender,
         });
 
-        res.status(201).json({ success: true, data: user });
-      } else {
+        return res
+          .status(201)
+          .json({ success: true, messages: ['User created'], data: null });
+      }
+
+      if (accountType === 'RESTAURANT') {
         const { name, address, phone, email } = req.body;
 
-        const restaurant = await Restaurant.create({
+        await Restaurant.create({
           name,
           address,
           phone,
           email,
         });
 
-        res.status(201).json({ success: true, data: restaurant });
+        return res.status(201).json({
+          success: true,
+          messages: ['Restaurant created'],
+          data: null,
+        });
       }
     } catch (error) {
       console.log(error);
-      res.status(400).json({ success: false });
+      return res
+        .status(500)
+        .json({ success: false, messages: ['Unexpected error'], data: null });
     }
   }
+
+  return res.status(400).json({
+    success: true,
+    messages: ['Unsupported HTTP method'],
+    data: null,
+  });
 }

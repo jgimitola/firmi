@@ -23,6 +23,11 @@ const RestaurantSchema = new mongoose.Schema({
     required: true,
     maxlength: 50,
   },
+  password: {
+    type: String,
+    required: true,
+    maxlength: 50,
+  },
 });
 
 export default mongoose.models.Restaurant ||
