@@ -106,7 +106,6 @@ const Login = (users) => {
 
   const buttonDisabled = !credentials.email || !credentials.password;
 
-
   return (
     <>
       <Head>

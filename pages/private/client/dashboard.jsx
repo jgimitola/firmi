@@ -3,9 +3,6 @@ import React from 'react';
 import Link from 'next/link';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-
-import useFetchCharts from '@/modules/hooks/useFetchCharts';
-
 import {
   Box,
   Button,
@@ -19,6 +16,7 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/system';
 
+import useFetchCharts from '@/modules/hooks/useFetchCharts';
 import styled from '@emotion/styled';
 
 const Main = styled(Box)`
@@ -73,7 +71,6 @@ const RecentList = styled(List)`
 `;
 
 const Dashboard = () => {
-
   const theme = useTheme();
 
   const small = useMediaQuery(theme.breakpoints.down('sm'));

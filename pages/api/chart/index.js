@@ -1,60 +1,56 @@
-import conectarDB from "@/lib/dbConnect";
-import Answer from "@/models/Answer";
-import Chart from "@/models/Chart";
+import dbConnect from '@/lib/dbConnect';
+import Answer from '@/models/Answer';
+import Chart from '@/models/Chart';
 
 export default async function handler(req, res) {
+  dbConnect();
 
-    conectarDB()
+  // POST DO CHART
 
-    // POST DO CHART
+  if (req.method === 'POST') {
+    try {
+      const { user, restaurant } = req.body;
 
-    if (req.method === 'POST') {
-        try {
-            const { user, restaurant } = req.body;
+      const chart = await Chart.create({
+        user,
+        restaurant,
+        date: Date.now(),
+      });
 
-            const chart = await Chart.create({
-                user,
-                restaurant,
-                date: Date.now(),
-            })
+      const { answers } = req.body;
 
-            const {answers} = req.body;
+      answers.forEach(async (ans) => {
+        const { question, value } = ans;
 
-            answers.forEach(async (answer) => {
-                const {question, value} = answer;
-                
-                const answer = await Answer.create({
-                    question,
-                    value,
-                    chart,
-                })
-            })
+        const answer = await Answer.create({
+          question,
+          value,
+          chart,
+        });
+      });
 
-
-            res.status(201).json({ success: true, data: chart })
-        } catch (error) {
-            res.status(400).json({ success: false })
-        }
+      res.status(201).json({ success: true, data: chart });
+    } catch (error) {
+      res.status(400).json({ success: false });
     }
+  }
 
-    // GET CHARTS
+  // GET CHARTS
 
-    if (req.method === 'GET') {
-        try {
+  if (req.method === 'GET') {
+    try {
+      // get query params
+      const { user, user_type } = req.query;
 
-            // get query params
-            const { user, user_type } = req.query;
+      if (user_type === 'user') {
+        const charts = await Chart.find({ user });
+      } else {
+        const charts = await Chart.find({ restaurant: user });
+      }
 
-            if (user_type === 'user') {
-                const charts = await Chart.find({user})
-            } else {
-                const charts = await Chart.find({restaurant: user})
-            }
-
-            res.status(200).json({ success: true, data: charts })
-        } catch (error) {
-            res.status(400).json({ success: false })
-        }
+      res.status(200).json({ success: true, data: charts });
+    } catch (error) {
+      res.status(400).json({ success: false });
     }
+  }
 }
-
