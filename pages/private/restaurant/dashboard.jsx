@@ -9,12 +9,11 @@ import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 
-import { useQueryClient } from '@tanstack/react-query';
-
 import useLogout from '@/modules/auth/hooks/useLogout';
-import restaurantKeys from '@/modules/restaurant/hooks/restaurantKeys';
+import uselistRestaurantCharts from '@/modules/chart/hooks/useListRestaurantCharts';
 import useGetCurrentRestaurant from '@/modules/restaurant/hooks/useGetCurrentRestaurant';
 import styled from '@emotion/styled';
+import { useSnackbar } from 'notistack';
 
 const Main = styled(Box)`
   height: 100svh;
@@ -27,6 +26,7 @@ const Main = styled(Box)`
 const QRConfigContainer = styled(Paper)`
   padding-inline: 4rem;
   padding-block: 2rem;
+  margin-top: 8rem;
 
   display: flex;
   flex-direction: column;
@@ -68,6 +68,15 @@ const QRBorder = styled(Box)`
   }
 `;
 
+const RestaurantName = styled(Typography)`
+  font-size: 1.2rem;
+  text-align: center;
+
+  ${({ theme }) => theme.breakpoints.down('sm')} {
+    font-size: 0.75rem;
+  }
+`;
+
 const CtaText = styled(Typography)`
   font-size: 1.2rem;
   text-align: center;
@@ -89,6 +98,7 @@ const ActionsWrapper = styled(Box)`
 
 const Entry = styled(Box)`
   display: flex;
+  cursor: pointer;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
@@ -113,21 +123,29 @@ const Circle = styled(Box)`
 const Dashboard = () => {
   const router = useRouter();
 
-  const queryClient = useQueryClient();
+  const questionsQuery = uselistRestaurantCharts(
+    { user: '6492681b3f1d32d9c2368067' },
+    {}
+  );
+  const data = questionsQuery.data?.data || [];
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const currentQuery = useGetCurrentRestaurant();
   const currentData = currentQuery.data?.data;
 
-  console.log(currentData);
-
   const logoutMutation = useLogout();
 
   const handleLogout = async () => {
-    await queryClient.removeQueries({ queryKey: restaurantKeys.currentKey });
+    try {
+      await logoutMutation.mutateAsync();
 
-    await logoutMutation.mutateAsync();
+      enqueueSnackbar('Has salido!', { variant: 'success' });
 
-    router.push('/login');
+      router.push('/login');
+    } catch (error) {
+      enqueueSnackbar('Hubo un error!', { variant: 'error' });
+    }
   };
 
   return (
@@ -149,6 +167,8 @@ const Dashboard = () => {
             </QRBorder>
           </QRWrapper>
 
+          <RestaurantName>{currentData?.name}</RestaurantName>
+
           <CtaText>
             Facilítales el código QR para que compartan su opinión
           </CtaText>
@@ -160,7 +180,11 @@ const Dashboard = () => {
             <Typography>Rápidas </Typography>
           </Entry>
 
-          <Entry>
+          <Entry
+            onClick={() => {
+              // create a xlsx file with charts with their answers
+            }}
+          >
             <Circle>
               <DownloadIcon />
             </Circle>
@@ -176,7 +200,7 @@ const Dashboard = () => {
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Button
             variant="outlined"
-            sx={{ margin: '0 auto' }}
+            sx={{ margin: '0 auto', marginBottom: '2rem' }}
             onClick={handleLogout}
           >
             Cerrar Sesión

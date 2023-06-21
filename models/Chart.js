@@ -8,6 +8,7 @@ const ChartSchema = new mongoose.Schema({
   restaurant: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Restaurant',
+    required: [true, 'Please add a restaurant'],
   },
   date: {
     type: Date,

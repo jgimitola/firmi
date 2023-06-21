@@ -12,11 +12,11 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/system';
 
-import { useQueryClient } from '@tanstack/react-query';
-
 import useLogout from '@/modules/auth/hooks/useLogout';
-import restaurantKeys from '@/modules/restaurant/hooks/restaurantKeys';
+import useGetCurrentClient from '@/modules/client/hooks/useGetCurrentClient';
+import useListClientCharts from '@/modules/client/hooks/useListClientCharts';
 import styled from '@emotion/styled';
+import { useSnackbar } from 'notistack';
 
 const Main = styled(Box)`
   height: 100svh;
@@ -37,6 +37,15 @@ const QRConfigContainer = styled(Paper)`
 
   ${({ theme }) => theme.breakpoints.down('sm')} {
     padding-inline: 2rem;
+  }
+`;
+
+const UserName = styled(Typography)`
+  font-size: 1.2rem;
+  text-align: center;
+
+  ${({ theme }) => theme.breakpoints.down('sm')} {
+    font-size: 1rem;
   }
 `;
 
@@ -75,29 +84,34 @@ const Dashboard = () => {
   const theme = useTheme();
   const small = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const currentQuery = useGetCurrentClient();
+  const currentData = currentQuery.data?.data;
+
+  const questionsQuery = useListClientCharts();
+  const questions = questionsQuery.data?.data.charts || [];
+
+  const recentForms = questions.map(
+    (question) =>
+      question.restaurant.name +
+      ' - ' +
+      new Date(question.date).toLocaleDateString()
+  );
 
   const logoutMutation = useLogout();
 
   const handleLogout = async () => {
-    await queryClient.removeQueries({ queryKey: restaurantKeys.currentKey });
+    try {
+      await logoutMutation.mutateAsync();
 
-    await logoutMutation.mutateAsync();
+      enqueueSnackbar('Has salido!', { variant: 'success' });
 
-    router.push('/login');
+      router.push('/login');
+    } catch (error) {
+      enqueueSnackbar('Hubo un error!', { variant: 'error' });
+    }
   };
-
-  const recentForms = [
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-  ];
 
   return (
     <Main>
@@ -131,7 +145,7 @@ const Dashboard = () => {
               }}
             >
               <AccountCircleIcon sx={{ fontSize: '128px' }} />
-              <Button variant="contained">Completar Perfil</Button>
+              <UserName>{currentData?.name}</UserName>
             </Half>
           </HalfWrapper>
         </QRConfigContainer>

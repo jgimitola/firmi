@@ -44,6 +44,21 @@ const Title = styled(Typography)`
   }
 `;
 
+export const getServerSideProps = async (ctx) => {
+  const rstId = ctx.query.restId;
+
+  try {
+    if (!rstId || rstId === 'undefined')
+      return {
+        redirect: { destination: '/login', permanent: false },
+      };
+
+    return { props: {} };
+  } catch (error) {}
+
+  return { props: {} };
+};
+
 const Form = () => {
   const router = useRouter();
 
@@ -61,7 +76,7 @@ const Form = () => {
             <Title component="h1">Llenar encuesta</Title>
 
             <Button
-              href={`/login/${restId}`}
+              href={`/login?restId=${restId}`}
               variant="contained"
               LinkComponent={Link}
             >
@@ -80,18 +95,5 @@ const Form = () => {
     </>
   );
 };
-
-export async function getServerSideProps(context) {
-  // ! Si ya tiene sesión iniciada redirigir al formulario
-  // ! Si no viene id de formulario redirigir al login
-
-  return {
-    props: {},
-    /*  redirect: {
-      destination: '/login',
-      permanent: false,
-    }, */
-  };
-}
 
 export default Form;

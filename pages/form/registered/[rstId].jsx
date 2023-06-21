@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { useRouter } from 'next/router';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -9,8 +11,10 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Typography from '@mui/material/Typography';
 
+import useAnswerChart from '@/modules/chart/hooks/useAnswerChart';
 import useListScaleQuestions from '@/modules/question/hooks/useListScaleQuestions';
 import styled from '@emotion/styled';
+import { useSnackbar } from 'notistack';
 
 const Main = styled(Box)`
   height: 100svh;
@@ -53,9 +57,32 @@ const Options = styled(RadioGroup)`
   flex-direction: row;
 `;
 
+export const getServerSideProps = async (ctx) => {
+  const rstId = ctx.query.rstId;
+
+  try {
+    if (!rstId || rstId === 'undefined')
+      return {
+        redirect: { destination: '/form', permanent: false },
+      };
+
+    return { props: {} };
+  } catch (error) {}
+
+  return { props: {} };
+};
+
 const RegisteredForm = () => {
+  const router = useRouter();
+
+  const { enqueueSnackbar } = useSnackbar();
+
   const questionsQuery = useListScaleQuestions({}, {});
   const questions = questionsQuery.data?.data || [];
+
+  const restaurant = router?.query?.rstId;
+
+  const answerMutation = useAnswerChart();
 
   const [answers, setAnswers] = useState({
     ...questions.reduce(
@@ -71,8 +98,30 @@ const RegisteredForm = () => {
     }));
   };
 
-  const handleSubmit = () => {
-    console.log(answers);
+  const handleSubmit = async (evt) => {
+    evt.preventDefault();
+
+    try {
+      const arr = Object.entries(answers);
+      const arr2 = arr.map(([key, value]) => {
+        const question = questions.find((question) => question.key === key);
+        return {
+          questionId: question._id,
+          value: +value,
+        };
+      });
+
+      await answerMutation.mutateAsync({
+        answers: arr2,
+        restaurant,
+      });
+
+      enqueueSnackbar('Gracias por contestar!', { variant: 'success' });
+
+      router.push('/form');
+    } catch (error) {
+      enqueueSnackbar('Hubo un error!', { variant: 'error' });
+    }
   };
 
   const buttonDisabled = Object.entries(answers).reduce(
@@ -90,35 +139,35 @@ const RegisteredForm = () => {
               <AnswersWrapper>
                 <Options
                   name={question.key}
-                  value={answers[question.key]}
+                  value={answers[question.key] || null}
                   onChange={handleFieldChange}
                 >
                   <OptionLabel
-                    value="-2"
+                    value="2"
                     control={<Radio />}
                     label="Totalmente desacuerdo"
                     labelPlacement="bottom"
                   />
                   <OptionLabel
-                    value="-1"
+                    value="3"
                     control={<Radio />}
                     label="Desacuerdo"
                     labelPlacement="bottom"
                   />
                   <OptionLabel
-                    value="0"
+                    value="4"
                     control={<Radio />}
                     label="Neutral"
                     labelPlacement="bottom"
                   />
                   <OptionLabel
-                    value="1"
+                    value="5"
                     control={<Radio />}
                     label="De acuerdo"
                     labelPlacement="bottom"
                   />
                   <OptionLabel
-                    value="2"
+                    value="6"
                     control={<Radio />}
                     label="Totalmente de acuerdo"
                     labelPlacement="bottom"
