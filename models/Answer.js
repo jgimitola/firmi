@@ -6,7 +6,9 @@ const AnswerSchema = new mongoose.Schema({
     ref: 'Question',
   },
   value: {
-    type: String,
+    type: Number,
+    required: true,
+    maxlength: 6,
   },
   chart: {
     type: mongoose.Schema.Types.ObjectId,

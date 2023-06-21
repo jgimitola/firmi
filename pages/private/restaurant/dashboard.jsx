@@ -28,6 +28,7 @@ const Main = styled(Box)`
 const QRConfigContainer = styled(Paper)`
   padding-inline: 4rem;
   padding-block: 2rem;
+  margin-top: 8rem;
 
   display: flex;
   flex-direction: column;
@@ -183,7 +184,7 @@ const Dashboard = () => {
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Button
             variant="outlined"
-            sx={{ margin: '0 auto' }}
+            sx={{ margin: '0 auto', marginBottom: '2rem' }}
             onClick={handleLogout}
           >
             Cerrar Sesión

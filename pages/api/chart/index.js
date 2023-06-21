@@ -8,8 +8,13 @@ export default async function handler(req, res) {
   // POST DO CHART
 
   if (req.method === 'POST') {
+    const token = req.cookies['firmi-cookie'];
+
     try {
-      const { user, restaurant } = req.body;
+      const { decoded } = await isAuth(token);
+      const user = decoded?._id || null;
+      
+      const { restaurant } = req.body;
 
       const chart = await Chart.create({
         user,
