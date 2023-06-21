@@ -2,8 +2,9 @@ import * as React from 'react';
 
 import Document, { Head, Html, Main, NextScript } from 'next/document';
 
-import createEmotionCache from '../lib/createEmotionCache';
 import createEmotionServer from '@emotion/server/create-instance';
+
+import createEmotionCache from '../lib/createEmotionCache';
 
 export default function MyDocument(props) {
   const { emotionStyleTags } = props;
