@@ -215,15 +215,15 @@ const Dashboard = () => {
                 ],
               ];
 
-              const body = charts?.charts.map((chart) => {
+              const body = charts?.charts?.map((chart) => {
                 return [
                   chart.user?.name || "No se ha registrado",
                   chart.restaurant.name,
                   [0, 1].includes(chart.answers[0]?.value)
-                    ? Boolean(chart.answers[0]?.value)
+                    ? ["No", "Si"][chart.answers[0]?.value]
                     : chart.answers[0]?.value - 1,
                   [0, 1].includes(chart.answers[1]?.value)
-                    ? Boolean(chart.answers[1]?.value)
+                    ? ["No", "Si"][chart.answers[1]?.value]
                     : chart.answers[1]?.value - 1,
                   chart.answers[2]?.value - 1 || 'No aplica',
                   chart.answers[3]?.value - 1 || 'No aplica',
