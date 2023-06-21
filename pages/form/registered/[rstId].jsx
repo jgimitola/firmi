@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { useRouter } from 'next/router';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -9,10 +11,10 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Typography from '@mui/material/Typography';
 
+import useAnswerChart from '@/modules/chart/hooks/useAnswerChart';
 import useListScaleQuestions from '@/modules/question/hooks/useListScaleQuestions';
 import styled from '@emotion/styled';
-import { useRouter } from 'next/router';
-import useAnswerChart from '@/modules/chart/hooks/useAnswerChart';
+import { useSnackbar } from 'notistack';
 
 const Main = styled(Box)`
   height: 100svh;
@@ -73,6 +75,8 @@ export const getServerSideProps = async (ctx) => {
 const RegisteredForm = () => {
   const router = useRouter();
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const questionsQuery = useListScaleQuestions({}, {});
   const questions = questionsQuery.data?.data || [];
 
@@ -97,21 +101,27 @@ const RegisteredForm = () => {
   const handleSubmit = async (evt) => {
     evt.preventDefault();
 
-    const arr = Object.entries(answers);
-    const arr2 = arr.map(([key, value]) => {
-      const question = questions.find((question) => question.key === key);
-      return {
-        questionId: question._id,
-        value: +value,
-      };
-    });
+    try {
+      const arr = Object.entries(answers);
+      const arr2 = arr.map(([key, value]) => {
+        const question = questions.find((question) => question.key === key);
+        return {
+          questionId: question._id,
+          value: +value,
+        };
+      });
 
-    const res = await answerMutation.mutateAsync({
-      answers: arr2,
-      restaurant,
-    });
+      await answerMutation.mutateAsync({
+        answers: arr2,
+        restaurant,
+      });
 
-    console.log(res);
+      enqueueSnackbar('Gracias por contestar!', { variant: 'success' });
+
+      router.push('/form');
+    } catch (error) {
+      enqueueSnackbar('Hubo un error!', { variant: 'error' });
+    }
   };
 
   const buttonDisabled = Object.entries(answers).reduce(
