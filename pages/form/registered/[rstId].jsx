@@ -90,7 +90,7 @@ const RegisteredForm = () => {
               <AnswersWrapper>
                 <Options
                   name={question.key}
-                  value={answers[question.key]}
+                  value={answers[question.key] || null}
                   onChange={handleFieldChange}
                 >
                   <OptionLabel
