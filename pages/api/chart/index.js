@@ -87,7 +87,7 @@ export default async function handler(req, res) {
           {
             $unwind: {
               path: '$user',
-              preserveNullAndEmptyArrays: false,
+              preserveNullAndEmptyArrays: true,
             },
           },
           {
