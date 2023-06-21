@@ -9,6 +9,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Typography from '@mui/material/Typography';
 
+import useListBoolQuestions from '@/modules/question/hooks/useListBoolQuestions';
 import styled from '@emotion/styled';
 
 const Main = styled(Box)`
@@ -42,24 +43,13 @@ const Options = styled(RadioGroup)`
   flex-direction: row;
 `;
 
-const questions = [
-  {
-    key: 'firstQuestion',
-    prompt: 'La entrega de su servicio fue oportuna o a tiempo',
-  },
-  {
-    key: 'secondQuestion',
-    prompt: 'La calidad del Producto fue lo es esperado',
-  },
-];
-
 const UnregisteredForm = () => {
+  const questionsQuery = useListBoolQuestions({}, {});
+  const questions = questionsQuery.data?.data || [];
+
   const [answers, setAnswers] = useState({
     ...questions.reduce(
-      (obj, question) => ({
-        ...obj,
-        [question.key]: null,
-      }),
+      (obj, question) => ({ ...obj, [question.key]: null }),
       {}
     ),
   });
@@ -86,7 +76,7 @@ const UnregisteredForm = () => {
         <FormWrapper>
           {questions.map((question) => (
             <QuestionWrapper key={`question-${question.key}`}>
-              <Question>{question.prompt}</Question>
+              <Question>{question.question}</Question>
               <AnswersWrapper>
                 <Options
                   name={question.key}

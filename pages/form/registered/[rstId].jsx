@@ -9,6 +9,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Typography from '@mui/material/Typography';
 
+import useListScaleQuestions from '@/modules/question/hooks/useListScaleQuestions';
 import styled from '@emotion/styled';
 
 const Main = styled(Box)`
@@ -52,41 +53,13 @@ const Options = styled(RadioGroup)`
   flex-direction: row;
 `;
 
-const questions = [
-  {
-    key: 'firstQuestion',
-    prompt: 'La entrega de su servicio fue oportuna o a tiempo',
-  },
-  {
-    key: 'secondQuestion',
-    prompt: 'La plataforma de entrega le genera confianza',
-  },
-  {
-    key: 'thirdQuestion',
-    prompt: 'Los alimentos recibidos se perciben de manera adecuada',
-  },
-  {
-    key: 'fourthQuestion',
-    prompt: 'La presentación de los productos son los esperados',
-  },
-  {
-    key: 'fifthQuestion',
-    prompt: 'Siente seguridad al consumir el producto solicitado.',
-  },
-  {
-    key: 'sixthQuestion',
-    prompt:
-      'Recibe atención del colaborador de la plataforma ante cualquier inquietud.',
-  },
-];
-
 const RegisteredForm = () => {
+  const questionsQuery = useListScaleQuestions({}, {});
+  const questions = questionsQuery.data?.data || [];
+
   const [answers, setAnswers] = useState({
     ...questions.reduce(
-      (obj, question) => ({
-        ...obj,
-        [question.key]: null,
-      }),
+      (obj, question) => ({ ...obj, [question.key]: null }),
       {}
     ),
   });
@@ -113,7 +86,7 @@ const RegisteredForm = () => {
         <FormWrapper>
           {questions.map((question) => (
             <QuestionWrapper key={`question-${question.key}`}>
-              <Question>{question.prompt}</Question>
+              <Question>{question.question}</Question>
               <AnswersWrapper>
                 <Options
                   name={question.key}

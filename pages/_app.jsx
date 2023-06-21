@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import Head from 'next/head';
 
 import CssBaseline from '@mui/material/CssBaseline';
@@ -8,6 +6,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
+import DataWrapper from '@/modules/components/DataWrapper';
 import { CacheProvider, Global, css } from '@emotion/react';
 
 import createEmotionCache from '../lib/createEmotionCache';
@@ -42,7 +41,9 @@ export default function MyApp(props) {
         <ThemeProvider theme={theme}>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
-          <Component {...pageProps} />
+          <DataWrapper>
+            <Component {...pageProps} />
+          </DataWrapper>
         </ThemeProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
