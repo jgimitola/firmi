@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import useAnswerChart from '@/modules/chart/hooks/useAnswerChart';
 import useListBoolQuestions from '@/modules/question/hooks/useListBoolQuestions';
 import styled from '@emotion/styled';
+import { useSnackbar } from 'notistack';
 
 const Main = styled(Box)`
   height: 100svh;
@@ -46,8 +47,25 @@ const Options = styled(RadioGroup)`
   flex-direction: row;
 `;
 
+export const getServerSideProps = async (ctx) => {
+  const rstId = ctx.query.rstId;
+
+  try {
+    if (!rstId || rstId === 'undefined')
+      return {
+        redirect: { destination: '/form', permanent: false },
+      };
+
+    return { props: {} };
+  } catch (error) {}
+
+  return { props: {} };
+};
+
 const UnregisteredForm = () => {
   const router = useRouter();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const questionsQuery = useListBoolQuestions({}, {});
   const questions = questionsQuery.data?.data || [];
@@ -73,21 +91,26 @@ const UnregisteredForm = () => {
   const handleSubmit = async (evt) => {
     evt.preventDefault();
 
-    const arr = Object.entries(answers);
-    const arr2 = arr.map(([key, value]) => {
-      const question = questions.find((question) => question.key === key);
-      return {
-        questionId: question._id,
-        value: +value,
-      };
-    });
+    try {
+      const arr = Object.entries(answers);
 
-    const res = await answerMutation.mutateAsync({
-      answers: arr2,
-      restaurant,
-    });
+      const arr2 = arr.map(([key, value]) => {
+        const question = questions.find((question) => question.key === key);
 
-    console.log(res);
+        return {
+          questionId: question._id,
+          value: +value,
+        };
+      });
+
+      await answerMutation.mutateAsync({ answers: arr2, restaurant });
+
+      enqueueSnackbar('Gracias por contestar!', { variant: 'success' });
+
+      router.push('/form');
+    } catch (error) {
+      enqueueSnackbar('Hubo un error!', { variant: 'error' });
+    }
   };
 
   const buttonDisabled = Object.entries(answers).reduce(

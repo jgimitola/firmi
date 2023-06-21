@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     try {
       const { decoded } = await isAuth(token);
       const user = decoded?._id || null;
-      
+
       const { restaurant } = req.body;
 
       const chart = await Chart.create({
@@ -26,18 +26,26 @@ export default async function handler(req, res) {
       const { answers } = req.body;
 
       const answersArray = [];
-      for (let i = 0; i < answers.length; i++) {
+      for (const userAnswer of answers) {
         const answer = await Answer.create({
           chart: chart._id,
-          question: answers[i].question,
-          value: answers[i].value,
+          question: userAnswer.question,
+          value: userAnswer.value,
         });
         answersArray.push(answer);
       }
 
-      res.status(201).json({ success: true, data: {chart, answersArray}, messages: ["Chart created successfully"]});
+      return res.status(201).json({
+        success: true,
+        data: { chart, answersArray },
+        messages: ['Chart created successfully'],
+      });
     } catch (error) {
-      res.status(400).json({ success: false, messages: ["Error creating chart"], data: error });
+      return res.status(400).json({
+        success: false,
+        messages: ['Error creating chart'],
+        data: error,
+      });
     }
   }
 
@@ -55,9 +63,9 @@ export default async function handler(req, res) {
         charts = await Chart.find({ restaurant: user });
       }
 
-      res.status(200).json({ success: true, data: charts });
+      return res.status(200).json({ success: true, data: charts });
     } catch (error) {
-      res.status(400).json({ success: false });
+      return res.status(400).json({ success: false });
     }
   }
 }

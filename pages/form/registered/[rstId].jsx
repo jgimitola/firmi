@@ -55,6 +55,21 @@ const Options = styled(RadioGroup)`
   flex-direction: row;
 `;
 
+export const getServerSideProps = async (ctx) => {
+  const rstId = ctx.query.rstId;
+
+  try {
+    if (!rstId || rstId === 'undefined')
+      return {
+        redirect: { destination: '/form', permanent: false },
+      };
+
+    return { props: {} };
+  } catch (error) {}
+
+  return { props: {} };
+};
+
 const RegisteredForm = () => {
   const router = useRouter();
 
