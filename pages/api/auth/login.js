@@ -22,11 +22,15 @@ export default async function handler(req, res) {
     }
 
     try {
-      const user = await User.findOne({ email: credentials.email });
+      const user = await User.findOne({
+        email: credentials.email,
+        password: credentials.password,
+      });
 
       if (!user) {
         const restaurant = await Restaurant.findOne({
           email: credentials.email,
+          password: credentials.password,
         });
 
         if (!restaurant) {
