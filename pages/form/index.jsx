@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -44,8 +45,9 @@ const Title = styled(Typography)`
 `;
 
 const Form = () => {
+  const router = useRouter();
 
-  const {rest} = router.query;
+  const { restId } = router.query;
 
   return (
     <>
@@ -58,10 +60,18 @@ const Form = () => {
           <LoginContainer>
             <Title component="h1">Llenar encuesta</Title>
 
-            <Button href={`/login/${rest}`} variant="contained" LinkComponent={Link}>
+            <Button
+              href={`/login/${restId}`}
+              variant="contained"
+              LinkComponent={Link}
+            >
               INICIAR SESIÓN
             </Button>
-            <Button href={`/form/unregistered/${rest}`} variant="outlined" LinkComponent={Link}>
+            <Button
+              href={`/form/unregistered/${restId}`}
+              variant="outlined"
+              LinkComponent={Link}
+            >
               CONTINUAR SIN USUARIO
             </Button>
           </LoginContainer>
