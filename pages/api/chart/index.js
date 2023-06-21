@@ -42,10 +42,11 @@ export default async function handler(req, res) {
       // get query params
       const { user, user_type } = req.query;
 
+      const charts = [];
       if (user_type === 'user') {
-        const charts = await Chart.find({ user });
+        charts = await Chart.find({ user });
       } else {
-        const charts = await Chart.find({ restaurant: user });
+        charts = await Chart.find({ restaurant: user });
       }
 
       res.status(200).json({ success: true, data: charts });
