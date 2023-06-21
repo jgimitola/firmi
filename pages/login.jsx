@@ -77,12 +77,19 @@ const Login = (users) => {
 
     const { data } = await loginMutation.mutateAsync(credentials);
 
-    if (data.data.accountType === 'CLIENT') {
-      router.push('/private/client/dashboard');
-    }
+    // get query params
+    const { rest } = router.query;
+    if (rest) {
+      router.push(`/form/registered/${rest}`);
+      return;
+    } else {
+      if (data.accountType === 'CLIENT') {
+        router.push('/private/client/dashboard');
+      }
 
-    if (data.data.accountType === 'RESTAURANT') {
-      router.push('/private/restaurant/dashboard');
+      if (data.accountType === 'RESTAURANT') {
+        router.push('/private/restaurant/dashboard');
+      }
     }
   };
 

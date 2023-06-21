@@ -44,6 +44,9 @@ const Title = styled(Typography)`
 `;
 
 const Form = () => {
+
+  const {rest} = router.query;
+
   return (
     <>
       <Head>
@@ -55,10 +58,10 @@ const Form = () => {
           <LoginContainer>
             <Title component="h1">Llenar encuesta</Title>
 
-            <Button href="/login" variant="contained" LinkComponent={Link}>
+            <Button href={`/login/${rest}`} variant="contained" LinkComponent={Link}>
               INICIAR SESIÓN
             </Button>
-            <Button variant="outlined" LinkComponent={Link}>
+            <Button href={`/form/unregistered/${rest}`} variant="outlined" LinkComponent={Link}>
               CONTINUAR SIN USUARIO
             </Button>
           </LoginContainer>
