@@ -8,6 +8,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import DataWrapper from '@/modules/components/DataWrapper';
 import { CacheProvider, Global, css } from '@emotion/react';
+import { SnackbarProvider } from 'notistack';
 
 import createEmotionCache from '../lib/createEmotionCache';
 import theme from '../lib/theme';
@@ -39,11 +40,13 @@ export default function MyApp(props) {
 
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
-          <DataWrapper>
-            <Component {...pageProps} />
-          </DataWrapper>
+          <SnackbarProvider maxSnack={3}>
+            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+            <CssBaseline />
+            <DataWrapper>
+              <Component {...pageProps} />
+            </DataWrapper>
+          </SnackbarProvider>
         </ThemeProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>

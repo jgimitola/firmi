@@ -19,6 +19,7 @@ import NextLink from '@/modules/components/Link';
 import getCurrentRestaurant from '@/modules/restaurant/controllers/getCurrentRestaurant';
 import restaurantKeys from '@/modules/restaurant/hooks/restaurantKeys';
 import styled from '@emotion/styled';
+import { useSnackbar } from 'notistack';
 
 const Main = styled(Box)`
   height: 100svh;
@@ -65,6 +66,8 @@ const Login = (users) => {
 
   const queryClient = useQueryClient();
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
@@ -82,24 +85,30 @@ const Login = (users) => {
   const handleSubmit = async (evt) => {
     evt.preventDefault();
 
-    const { data } = await loginMutation.mutateAsync(credentials);
+    try {
+      const { data } = await loginMutation.mutateAsync(credentials);
 
-    if (data.accountType === 'CLIENT') {
-      const { restId } = router.query;
+      enqueueSnackbar('Sesión iniciada!', { variant: 'success' });
 
-      if (restId) return router.push(`/form/registered/${restId}`);
+      if (data.accountType === 'CLIENT') {
+        const { restId } = router.query;
 
-      router.push('/private/client/dashboard');
-    }
+        if (restId) return router.push(`/form/registered/${restId}`);
 
-    if (data.accountType === 'RESTAURANT') {
-      await queryClient.prefetchQuery(
-        restaurantKeys.currentKey,
-        () => getCurrentRestaurant(),
-        { staleTime: STALE_TIME, cacheTime: STALE_TIME }
-      );
+        router.push('/private/client/dashboard');
+      }
 
-      router.push('/private/restaurant/dashboard');
+      if (data.accountType === 'RESTAURANT') {
+        await queryClient.prefetchQuery(
+          restaurantKeys.currentKey,
+          () => getCurrentRestaurant(),
+          { staleTime: STALE_TIME, cacheTime: STALE_TIME }
+        );
+
+        router.push('/private/restaurant/dashboard');
+      }
+    } catch (error) {
+      enqueueSnackbar('Hubo un error!', { variant: 'error' });
     }
   };
 
