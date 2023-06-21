@@ -42,7 +42,7 @@ export default async function handler(req, res) {
       // get query params
       const { user, user_type } = req.query;
 
-      const charts = [];
+      let charts = [];
       if (user_type === 'user') {
         charts = await Chart.find({ user });
       } else {
