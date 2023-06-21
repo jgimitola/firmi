@@ -12,13 +12,9 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/system';
 
-import { useQueryClient } from '@tanstack/react-query';
-
 import useLogout from '@/modules/auth/hooks/useLogout';
-import clientKeys from '@/modules/client/hooks/clientKeys';
 import useGetCurrentClient from '@/modules/client/hooks/useGetCurrentClient';
 import useListClientCharts from '@/modules/client/hooks/useListClientCharts';
-import restaurantKeys from '@/modules/restaurant/hooks/restaurantKeys';
 import styled from '@emotion/styled';
 import { useSnackbar } from 'notistack';
 
@@ -88,8 +84,6 @@ const Dashboard = () => {
   const theme = useTheme();
   const small = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const queryClient = useQueryClient();
-
   const { enqueueSnackbar } = useSnackbar();
 
   const currentQuery = useGetCurrentClient();
@@ -109,16 +103,6 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     try {
-      await queryClient.removeQueries([
-        restaurantKeys.currentKey,
-        clientKeys.currentKey,
-      ]);
-
-      await queryClient.invalidateQueries([
-        restaurantKeys.currentKey,
-        clientKeys.currentKey,
-      ]);
-
       await logoutMutation.mutateAsync();
 
       enqueueSnackbar('Has salido!', { variant: 'success' });

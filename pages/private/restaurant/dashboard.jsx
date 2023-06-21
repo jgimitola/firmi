@@ -9,12 +9,8 @@ import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 
-import { useQueryClient } from '@tanstack/react-query';
-
 import useLogout from '@/modules/auth/hooks/useLogout';
 import uselistRestaurantCharts from '@/modules/chart/hooks/useListRestaurantCharts';
-import clientKeys from '@/modules/client/hooks/clientKeys';
-import restaurantKeys from '@/modules/restaurant/hooks/restaurantKeys';
 import useGetCurrentRestaurant from '@/modules/restaurant/hooks/useGetCurrentRestaurant';
 import styled from '@emotion/styled';
 import { useSnackbar } from 'notistack';
@@ -72,6 +68,15 @@ const QRBorder = styled(Box)`
   }
 `;
 
+const RestaurantName = styled(Typography)`
+  font-size: 1.2rem;
+  text-align: center;
+
+  ${({ theme }) => theme.breakpoints.down('sm')} {
+    font-size: 0.75rem;
+  }
+`;
+
 const CtaText = styled(Typography)`
   font-size: 1.2rem;
   text-align: center;
@@ -124,10 +129,6 @@ const Dashboard = () => {
   );
   const data = questionsQuery.data?.data || [];
 
-  console.log(data);
-
-  const queryClient = useQueryClient();
-
   const { enqueueSnackbar } = useSnackbar();
 
   const currentQuery = useGetCurrentRestaurant();
@@ -137,16 +138,6 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     try {
-      await queryClient.removeQueries([
-        restaurantKeys.currentKey,
-        clientKeys.currentKey,
-      ]);
-
-      await queryClient.invalidateQueries([
-        restaurantKeys.currentKey,
-        clientKeys.currentKey,
-      ]);
-
       await logoutMutation.mutateAsync();
 
       enqueueSnackbar('Has salido!', { variant: 'success' });
@@ -175,6 +166,8 @@ const Dashboard = () => {
               />
             </QRBorder>
           </QRWrapper>
+
+          <RestaurantName>{currentData?.name}</RestaurantName>
 
           <CtaText>
             Facilítales el código QR para que compartan su opinión

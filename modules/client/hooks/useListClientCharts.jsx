@@ -1,7 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { REFETCH_INTERVAL } from '@/lib/constants';
-
 import listClientCharts from '../controllers/listClientCharts';
 
 const useListClientCharts = (params, filters, config) => {
@@ -10,7 +8,6 @@ const useListClientCharts = (params, filters, config) => {
     queryFn: (context) => listClientCharts(context.queryKey[1]),
     config: {
       ...config,
-      refetchInterval: REFETCH_INTERVAL,
     },
   });
 
