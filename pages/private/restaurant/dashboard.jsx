@@ -184,9 +184,9 @@ const Dashboard = () => {
           <Entry>
             <Circle>
               {/* count charts whith any answer with value 0 or 1 */}
-              {charts?.charts.filter((chart) => {
+              {charts?.charts?.filter((chart) => {
                 return (
-                  chart.answers.filter((answer) => {
+                  chart?.answers.filter((answer) => {
                     return [0, 1].includes(answer.value);
                   }).length > 0
 
@@ -249,14 +249,14 @@ const Dashboard = () => {
           <Entry>
             <Circle>
               {/* count charts whith any answer with value greater than 1 */}
-              {charts?.charts.filter((chart) => {
+              {charts?.charts?.filter((chart) => {
                 return (
-                  chart.answers.filter((answer) => {
+                  chart?.answers.filter((answer) => {
                     return answer.value > 1;
                   }).length > 0
                 );
               }).length}
-                
+
             </Circle>
             <Typography>Detalladas </Typography>
           </Entry>
