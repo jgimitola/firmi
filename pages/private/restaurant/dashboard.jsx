@@ -10,7 +10,8 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 
 import useLogout from '@/modules/auth/hooks/useLogout';
-import useListRestaurantCharts from '@/modules/chart/hooks/useListRestaurantCharts';
+import useListBoolQuestions from '@/modules/question/hooks/useListBoolQuestions';
+import useListScaleQuestions from '@/modules/question/hooks/useListScaleQuestions';
 import useGetCurrentRestaurant from '@/modules/restaurant/hooks/useGetCurrentRestaurant';
 import styled from '@emotion/styled';
 import { useSnackbar } from 'notistack';
@@ -123,8 +124,11 @@ const Circle = styled(Box)`
 const Dashboard = () => {
   const router = useRouter();
 
-  const questionsQuery = useListRestaurantCharts({}, {});
-  const data = questionsQuery.data?.data || [];
+  const booleanQuestionsQuery = useListBoolQuestions({}, {});
+  const booleanQuestions = booleanQuestionsQuery.data?.data || [];
+
+  const scaleQuestionsQuery = useListScaleQuestions({}, {});
+  const scaleQuestions = scaleQuestionsQuery.data?.data || [];
 
   const { enqueueSnackbar } = useSnackbar();
 
