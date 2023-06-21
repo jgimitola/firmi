@@ -105,7 +105,7 @@ const UnregisteredForm = () => {
               <AnswersWrapper>
                 <Options
                   name={question.key}
-                  value={answers[question.key]}
+                  value={answers[question.key] || null}
                   onChange={handleFieldChange}
                 >
                   <FormControlLabel value="1" control={<Radio />} label="Sí" />
