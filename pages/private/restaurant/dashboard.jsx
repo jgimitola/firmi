@@ -10,7 +10,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 
 import useLogout from '@/modules/auth/hooks/useLogout';
-import uselistRestaurantCharts from '@/modules/chart/hooks/useListRestaurantCharts';
+import useListRestaurantCharts from '@/modules/chart/hooks/useListRestaurantCharts';
 import useGetCurrentRestaurant from '@/modules/restaurant/hooks/useGetCurrentRestaurant';
 import styled from '@emotion/styled';
 import { useSnackbar } from 'notistack';
@@ -123,10 +123,7 @@ const Circle = styled(Box)`
 const Dashboard = () => {
   const router = useRouter();
 
-  const questionsQuery = uselistRestaurantCharts(
-    { user: '6492681b3f1d32d9c2368067' },
-    {}
-  );
+  const questionsQuery = useListRestaurantCharts({}, {});
   const data = questionsQuery.data?.data || [];
 
   const { enqueueSnackbar } = useSnackbar();

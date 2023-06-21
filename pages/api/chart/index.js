@@ -1,9 +1,7 @@
 import dbConnect from '@/lib/dbConnect';
 import Answer from '@/models/Answer';
 import Chart from '@/models/Chart';
-import Question from '@/models/Question';
 import Restaurant from '@/models/Restaurant';
-import User from '@/models/User';
 import isAuth from '@/modules/auth/lib/isAuth';
 
 export default async function handler(req, res) {
@@ -58,6 +56,7 @@ export default async function handler(req, res) {
       let charts = [];
       let answers = [];
       let questions = [];
+
       if (userType === 'CLIENT') {
         charts = await Chart.find({ user });
         // set restaurant id in chart for restaurant name
@@ -65,33 +64,62 @@ export default async function handler(req, res) {
           const restaurant = await Restaurant.findById(chart.restaurant);
           chart.restaurant = restaurant;
         }
-      } else {
-        charts = await Chart.find({ restaurant: user });
-
-        // set user id in chart for user name
-        for (const chart of charts) {
-          const user = await User.findById(chart.user);
-          chart.user = user;
-        }
-
-        // get all answers for each chart
-        answers = await Answer.find({
-          chart: { $in: charts.map((chart) => chart._id) },
-        });
-
-        // get all questions for each answer
-        questions = await Question.find({
-          _id: { $in: answers.map((answer) => answer.question) },
-        });
       }
+
+      if (userType === 'RESTAURANT') {
+        charts = await Chart.aggregate([
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'user',
+              foreignField: '_id',
+              as: 'user',
+            },
+          },
+          {
+            $lookup: {
+              from: 'restaurants',
+              localField: 'restaurant',
+              foreignField: '_id',
+              as: 'restaurant',
+            },
+          },
+          {
+            $unwind: {
+              path: '$user',
+              preserveNullAndEmptyArrays: false,
+            },
+          },
+          {
+            $unwind: {
+              path: '$restaurant',
+              preserveNullAndEmptyArrays: false,
+            },
+          },
+          {
+            $unset: ['user.password', 'restaurant.password'],
+          },
+          {
+            $lookup: {
+              from: 'answers',
+              localField: '_id',
+              foreignField: 'chart',
+              as: 'answers',
+            },
+          },
+        ]);
+      }
+
+      console.log(charts);
 
       return res.status(200).json({
         success: true,
-        data: { charts, answers, questions },
+        data: { charts },
         messages: ['Charts fetched successfully'],
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       messages: ['Unexpected error'],
