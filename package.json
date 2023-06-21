@@ -28,7 +28,8 @@
     "notistack": "^3.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-qr-code": "^2.0.11"
+    "react-qr-code": "^2.0.11",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
