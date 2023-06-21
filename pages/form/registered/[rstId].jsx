@@ -11,6 +11,8 @@ import Typography from '@mui/material/Typography';
 
 import useListScaleQuestions from '@/modules/question/hooks/useListScaleQuestions';
 import styled from '@emotion/styled';
+import { useRouter } from 'next/router';
+import useAnswerChart from '@/modules/chart/hooks/useAnswerChart';
 
 const Main = styled(Box)`
   height: 100svh;
@@ -54,8 +56,14 @@ const Options = styled(RadioGroup)`
 `;
 
 const RegisteredForm = () => {
+  const router = useRouter();
+
   const questionsQuery = useListScaleQuestions({}, {});
   const questions = questionsQuery.data?.data || [];
+
+  const restaurant = router?.query?.rstId;
+
+  const answerMutation = useAnswerChart();
 
   const [answers, setAnswers] = useState({
     ...questions.reduce(
@@ -71,8 +79,24 @@ const RegisteredForm = () => {
     }));
   };
 
-  const handleSubmit = () => {
-    console.log(answers);
+  const handleSubmit = async (evt) => {
+    evt.preventDefault();
+
+    const arr = Object.entries(answers);
+    const arr2 = arr.map(([key, value]) => {
+      const question = questions.find((question) => question.key === key);
+      return {
+        questionId: question._id,
+        value: +value,
+      };
+    });
+
+    const res = await answerMutation.mutateAsync({
+      answers: arr2,
+      restaurant,
+    });
+
+    console.log(res);
   };
 
   const buttonDisabled = Object.entries(answers).reduce(
