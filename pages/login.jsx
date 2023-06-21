@@ -10,9 +10,14 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
+import { useQueryClient } from '@tanstack/react-query';
+
+import { STALE_TIME } from '@/lib/constants';
 import useLogin from '@/modules/auth/hooks/useLogin';
 import isAuth from '@/modules/auth/lib/isAuth';
 import NextLink from '@/modules/components/Link';
+import getCurrentRestaurant from '@/modules/restaurant/controllers/getCurrentRestaurant';
+import restaurantKeys from '@/modules/restaurant/hooks/restaurantKeys';
 import styled from '@emotion/styled';
 
 const Main = styled(Box)`
@@ -58,6 +63,8 @@ const Form = styled(Box)`
 const Login = (users) => {
   const router = useRouter();
 
+  const queryClient = useQueryClient();
+
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
@@ -77,19 +84,22 @@ const Login = (users) => {
 
     const { data } = await loginMutation.mutateAsync(credentials);
 
-    // get query params
-    const { rest } = router.query;
-    if (rest) {
-      router.push(`/form/registered/${rest}`);
-      return;
-    } else {
-      if (data.accountType === 'CLIENT') {
-        router.push('/private/client/dashboard');
-      }
+    if (data.accountType === 'CLIENT') {
+      const { restId } = router.query;
 
-      if (data.accountType === 'RESTAURANT') {
-        router.push('/private/restaurant/dashboard');
-      }
+      if (restId) return router.push(`/form/registered/${restId}`);
+
+      router.push('/private/client/dashboard');
+    }
+
+    if (data.accountType === 'RESTAURANT') {
+      await queryClient.prefetchQuery(
+        restaurantKeys.currentKey,
+        () => getCurrentRestaurant(),
+        { staleTime: STALE_TIME, cacheTime: STALE_TIME }
+      );
+
+      router.push('/private/restaurant/dashboard');
     }
   };
 

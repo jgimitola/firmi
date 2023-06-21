@@ -9,7 +9,11 @@ import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 
+import { useQueryClient } from '@tanstack/react-query';
+
 import useLogout from '@/modules/auth/hooks/useLogout';
+import restaurantKeys from '@/modules/restaurant/hooks/restaurantKeys';
+import useGetCurrentRestaurant from '@/modules/restaurant/hooks/useGetCurrentRestaurant';
 import styled from '@emotion/styled';
 
 const Main = styled(Box)`
@@ -109,9 +113,18 @@ const Circle = styled(Box)`
 const Dashboard = () => {
   const router = useRouter();
 
+  const queryClient = useQueryClient();
+
+  const currentQuery = useGetCurrentRestaurant();
+  const currentData = currentQuery.data?.data;
+
+  console.log(currentData);
+
   const logoutMutation = useLogout();
 
   const handleLogout = async () => {
+    await queryClient.removeQueries({ queryKey: restaurantKeys.currentKey });
+
     await logoutMutation.mutateAsync();
 
     router.push('/login');
@@ -127,7 +140,11 @@ const Dashboard = () => {
             <QRBorder>
               <QRCode
                 style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
-                value="hey"
+                value={
+                  currentData
+                    ? `${process.env.NEXT_PUBLIC_DEPLOY_URL}/form?restId=${currentData?._id}`
+                    : 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+                }
               />
             </QRBorder>
           </QRWrapper>
