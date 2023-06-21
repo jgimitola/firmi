@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 
 import useListBoolQuestions from '@/modules/question/hooks/useListBoolQuestions';
 import styled from '@emotion/styled';
+import useAnswerChart from '@/modules/chart/hooks/useAnswerChart';
 
 const Main = styled(Box)`
   height: 100svh;
@@ -47,6 +48,8 @@ const UnregisteredForm = () => {
   const questionsQuery = useListBoolQuestions({}, {});
   const questions = questionsQuery.data?.data || [];
 
+  const answerMutation = useAnswerChart();
+
   const [answers, setAnswers] = useState({
     ...questions.reduce(
       (obj, question) => ({ ...obj, [question.key]: null }),
@@ -61,8 +64,20 @@ const UnregisteredForm = () => {
     }));
   };
 
-  const handleSubmit = () => {
-    console.log(answers);
+  const handleSubmit = async (evt) => {
+    evt.preventDefault();
+
+    const arr = Object.entries(answers);
+    const arr2 = arr.map(([key, value]) => {
+      const question = questions.find((question) => question.key === key);
+      return {
+        questionId: question._id,
+        answer: value,
+      };
+    });
+
+    console.log(arr2);
+    // await answerMutation.mutateAsync(answers);
   };
 
   const buttonDisabled = Object.entries(answers).reduce(

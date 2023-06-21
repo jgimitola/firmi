@@ -61,7 +61,7 @@ const Form = () => {
             <Title component="h1">Llenar encuesta</Title>
 
             <Button
-              href={`/login/${restId}`}
+              href={`/login?restId=${restId}`}
               variant="contained"
               LinkComponent={Link}
             >
