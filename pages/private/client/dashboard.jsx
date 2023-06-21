@@ -140,7 +140,6 @@ const Dashboard = () => {
               }}
             >
               <AccountCircleIcon sx={{ fontSize: '128px' }} />
-              <Button variant="contained">Completar Perfil</Button>
             </Half>
           </HalfWrapper>
         </QRConfigContainer>

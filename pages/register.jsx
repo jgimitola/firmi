@@ -117,7 +117,7 @@ const Register = () => {
         gender: data.gender.id,
       });
 
-      enqueueSnackbar('Sesión iniciada!', { variant: 'success' });
+      enqueueSnackbar('Registro exitoso!', { variant: 'success' });
 
       router.push('/login');
     } catch (error) {
