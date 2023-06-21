@@ -16,6 +16,7 @@ import restaurantKeys from '@/modules/restaurant/hooks/restaurantKeys';
 import useGetCurrentRestaurant from '@/modules/restaurant/hooks/useGetCurrentRestaurant';
 import styled from '@emotion/styled';
 import { useSnackbar } from 'notistack';
+import uselistRestaurantCharts from '@/modules/chart/hooks/useListRestaurantCharts';
 
 const Main = styled(Box)`
   height: 100svh;
@@ -91,6 +92,7 @@ const ActionsWrapper = styled(Box)`
 
 const Entry = styled(Box)`
   display: flex;
+  cursor: pointer;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
@@ -114,6 +116,14 @@ const Circle = styled(Box)`
 
 const Dashboard = () => {
   const router = useRouter();
+
+  const questionsQuery = uselistRestaurantCharts(
+    { user: '6492681b3f1d32d9c2368067' },
+    {}
+  );
+  const data = questionsQuery.data?.data || [];
+
+  console.log(data);
 
   const queryClient = useQueryClient();
 
@@ -168,7 +178,15 @@ const Dashboard = () => {
             <Typography>Rápidas </Typography>
           </Entry>
 
-          <Entry>
+          <Entry 
+          onClick={
+            () => {
+              // create a xlsx file with charts with their answers
+
+              
+
+            }
+          } >
             <Circle>
               <DownloadIcon />
             </Circle>

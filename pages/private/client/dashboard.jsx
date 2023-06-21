@@ -15,6 +15,7 @@ import { useTheme } from '@mui/system';
 import { useQueryClient } from '@tanstack/react-query';
 
 import useLogout from '@/modules/auth/hooks/useLogout';
+import uselistClientCharts from '@/modules/chart/hooks/uselistClientCharts';
 import restaurantKeys from '@/modules/restaurant/hooks/restaurantKeys';
 import styled from '@emotion/styled';
 import { useSnackbar } from 'notistack';
@@ -73,6 +74,19 @@ const RecentList = styled(List)`
 const Dashboard = () => {
   const router = useRouter();
 
+  const questionsQuery = uselistClientCharts(
+    { user: '649268553f1d32d9c2368069' },
+    {}
+  );
+  const questions = questionsQuery.data?.data || [];
+
+  const recentForms = questions.map(
+    (question) =>
+      question.restaurant.name +
+      ' - ' +
+      new Date(question.date).toLocaleDateString()
+  );
+
   const theme = useTheme();
   const small = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -95,18 +109,6 @@ const Dashboard = () => {
       enqueueSnackbar('Hubo un error!', { variant: 'error' });
     }
   };
-
-  const recentForms = [
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-    '5P - Donde pablo - 24/08/2023',
-  ];
 
   return (
     <Main>

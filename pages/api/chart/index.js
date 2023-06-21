@@ -1,6 +1,9 @@
 import dbConnect from '@/lib/dbConnect';
 import Answer from '@/models/Answer';
 import Chart from '@/models/Chart';
+import Question from '@/models/Question';
+import Restaurant from '@/models/Restaurant';
+import User from '@/models/User';
 import isAuth from '@/modules/auth/lib/isAuth';
 
 export default async function handler(req, res) {
@@ -29,7 +32,7 @@ export default async function handler(req, res) {
       for (const userAnswer of answers) {
         const answer = await Answer.create({
           chart: chart._id,
-          question: userAnswer.question,
+          question: userAnswer.questionId,
           value: userAnswer.value,
         });
         answersArray.push(answer);
@@ -54,18 +57,45 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       // get query params
-      const { user, user_type } = req.query;
+      const { user, userType } = req.query;
 
       let charts = [];
-      if (user_type === 'user') {
+      let answers = [];
+      let questions = [];
+      if (userType === 'CLIENT') {
         charts = await Chart.find({ user });
+        // set restaurant id in chart for restaurant name
+        for (const chart of charts) {
+          const restaurant = await Restaurant.findById(chart.restaurant);
+          chart.restaurant = restaurant;
+        }
       } else {
         charts = await Chart.find({ restaurant: user });
+
+        // set user id in chart for user name
+        for (const chart of charts) {
+          const user = await User.findById(chart.user);
+          chart.user = user;
+        }
+
+        // get all answers for each chart
+        answers = await Answer.find({ chart: { $in: charts.map((chart) => chart._id) } });
+
+        // get all questions for each answer
+        questions = await Question.find({ _id: { $in: answers.map((answer) => answer.question) } });
+
+        
       }
 
-      return res.status(200).json({ success: true, data: charts });
+      return res
+        .status(200)
+        .json({
+          success: true,
+          data: { charts, answers, questions },
+          messages: ['Charts fetched successfully'],
+        });
     } catch (error) {
-      return res.status(400).json({ success: false });
+      return res.status(400).json({ success: false, data: error });
     }
   }
 }

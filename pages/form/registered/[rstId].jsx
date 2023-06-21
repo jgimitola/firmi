@@ -143,31 +143,31 @@ const RegisteredForm = () => {
                   onChange={handleFieldChange}
                 >
                   <OptionLabel
-                    value="-2"
+                    value="2"
                     control={<Radio />}
                     label="Totalmente desacuerdo"
                     labelPlacement="bottom"
                   />
                   <OptionLabel
-                    value="-1"
+                    value="3"
                     control={<Radio />}
                     label="Desacuerdo"
                     labelPlacement="bottom"
                   />
                   <OptionLabel
-                    value="0"
+                    value="4"
                     control={<Radio />}
                     label="Neutral"
                     labelPlacement="bottom"
                   />
                   <OptionLabel
-                    value="1"
+                    value="5"
                     control={<Radio />}
                     label="De acuerdo"
                     labelPlacement="bottom"
                   />
                   <OptionLabel
-                    value="2"
+                    value="6"
                     control={<Radio />}
                     label="Totalmente de acuerdo"
                     labelPlacement="bottom"
