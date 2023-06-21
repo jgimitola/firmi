@@ -17,6 +17,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import useLogout from '@/modules/auth/hooks/useLogout';
 import restaurantKeys from '@/modules/restaurant/hooks/restaurantKeys';
 import styled from '@emotion/styled';
+import { useSnackbar } from 'notistack';
 
 const Main = styled(Box)`
   height: 100svh;
@@ -77,14 +78,22 @@ const Dashboard = () => {
 
   const queryClient = useQueryClient();
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const logoutMutation = useLogout();
 
   const handleLogout = async () => {
-    await queryClient.removeQueries({ queryKey: restaurantKeys.currentKey });
+    try {
+      await queryClient.removeQueries({ queryKey: restaurantKeys.currentKey });
 
-    await logoutMutation.mutateAsync();
+      await logoutMutation.mutateAsync();
 
-    router.push('/login');
+      enqueueSnackbar('Has salido!', { variant: 'success' });
+
+      router.push('/login');
+    } catch (error) {
+      enqueueSnackbar('Hubo un error!', { variant: 'error' });
+    }
   };
 
   const recentForms = [

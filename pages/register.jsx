@@ -14,6 +14,7 @@ import useSignUp from '@/modules/auth/hooks/useSignUp';
 import NextLink from '@/modules/components/Link';
 import Select from '@/modules/components/Select';
 import styled from '@emotion/styled';
+import { useSnackbar } from 'notistack';
 
 const Main = styled(Box)`
   height: 100svh;
@@ -92,6 +93,8 @@ const Register = () => {
 
   const [data, setData] = useState({ ...initialData });
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const signUpMutation = useSignUp();
 
   const handleSelectableChange = (name, value) => {
@@ -105,14 +108,21 @@ const Register = () => {
   const handleSubmit = async (evt) => {
     evt.preventDefault();
 
-    await signUpMutation.mutateAsync({
-      ...data,
-      name: data.accountType.id === 'CLIENT' ? data.name : data.restaurantName,
-      accountType: data.accountType.id,
-      gender: data.gender.id,
-    });
+    try {
+      await signUpMutation.mutateAsync({
+        ...data,
+        name:
+          data.accountType.id === 'CLIENT' ? data.name : data.restaurantName,
+        accountType: data.accountType.id,
+        gender: data.gender.id,
+      });
 
-    router.push('/login');
+      enqueueSnackbar('Sesión iniciada!', { variant: 'success' });
+
+      router.push('/login');
+    } catch (error) {
+      enqueueSnackbar('Hubo un error!', { variant: 'error' });
+    }
   };
 
   const clientRegister = data.accountType.id === 'CLIENT';
