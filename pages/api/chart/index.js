@@ -9,13 +9,12 @@ import isAuth from '@/modules/auth/lib/isAuth';
 export default async function handler(req, res) {
   await dbConnect();
 
-  // POST DO CHART
+  const token = req.cookies['firmi-cookie'];
 
-  if (req.method === 'POST') {
-    const token = req.cookies['firmi-cookie'];
+  try {
+    const { authenticated, decoded } = await isAuth(token);
 
-    try {
-      const { decoded } = await isAuth(token);
+    if (req.method === 'POST') {
       const user = decoded?._id || null;
 
       const { restaurant } = req.body;
@@ -43,21 +42,18 @@ export default async function handler(req, res) {
         data: { chart, answersArray },
         messages: ['Chart created successfully'],
       });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        messages: ['Error creating chart'],
-        data: error,
-      });
     }
-  }
 
-  // GET CHARTS
+    if (req.method === 'GET') {
+      if (!authenticated)
+        return res.status(401).json({
+          success: false,
+          messages: ['You are not logged in'],
+          data: null,
+        });
 
-  if (req.method === 'GET') {
-    try {
-      // get query params
-      const { user, userType } = req.query;
+      const { userType } = req.query;
+      const user = decoded._id;
 
       let charts = [];
       let answers = [];
@@ -79,23 +75,27 @@ export default async function handler(req, res) {
         }
 
         // get all answers for each chart
-        answers = await Answer.find({ chart: { $in: charts.map((chart) => chart._id) } });
+        answers = await Answer.find({
+          chart: { $in: charts.map((chart) => chart._id) },
+        });
 
         // get all questions for each answer
-        questions = await Question.find({ _id: { $in: answers.map((answer) => answer.question) } });
-
-        
+        questions = await Question.find({
+          _id: { $in: answers.map((answer) => answer.question) },
+        });
       }
 
-      return res
-        .status(200)
-        .json({
-          success: true,
-          data: { charts, answers, questions },
-          messages: ['Charts fetched successfully'],
-        });
-    } catch (error) {
-      return res.status(400).json({ success: false, data: error });
+      return res.status(200).json({
+        success: true,
+        data: { charts, answers, questions },
+        messages: ['Charts fetched successfully'],
+      });
     }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      messages: ['Unexpected error'],
+      data: error,
+    });
   }
 }

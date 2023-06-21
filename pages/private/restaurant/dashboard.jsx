@@ -12,11 +12,12 @@ import Typography from '@mui/material/Typography';
 import { useQueryClient } from '@tanstack/react-query';
 
 import useLogout from '@/modules/auth/hooks/useLogout';
+import uselistRestaurantCharts from '@/modules/chart/hooks/useListRestaurantCharts';
+import clientKeys from '@/modules/client/hooks/clientKeys';
 import restaurantKeys from '@/modules/restaurant/hooks/restaurantKeys';
 import useGetCurrentRestaurant from '@/modules/restaurant/hooks/useGetCurrentRestaurant';
 import styled from '@emotion/styled';
 import { useSnackbar } from 'notistack';
-import uselistRestaurantCharts from '@/modules/chart/hooks/useListRestaurantCharts';
 
 const Main = styled(Box)`
   height: 100svh;
@@ -136,7 +137,15 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     try {
-      await queryClient.removeQueries({ queryKey: restaurantKeys.currentKey });
+      await queryClient.removeQueries([
+        restaurantKeys.currentKey,
+        clientKeys.currentKey,
+      ]);
+
+      await queryClient.invalidateQueries([
+        restaurantKeys.currentKey,
+        clientKeys.currentKey,
+      ]);
 
       await logoutMutation.mutateAsync();
 
@@ -178,15 +187,11 @@ const Dashboard = () => {
             <Typography>Rápidas </Typography>
           </Entry>
 
-          <Entry 
-          onClick={
-            () => {
+          <Entry
+            onClick={() => {
               // create a xlsx file with charts with their answers
-
-              
-
-            }
-          } >
+            }}
+          >
             <Circle>
               <DownloadIcon />
             </Circle>

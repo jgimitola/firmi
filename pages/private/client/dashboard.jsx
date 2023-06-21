@@ -15,7 +15,9 @@ import { useTheme } from '@mui/system';
 import { useQueryClient } from '@tanstack/react-query';
 
 import useLogout from '@/modules/auth/hooks/useLogout';
-import uselistClientCharts from '@/modules/chart/hooks/uselistClientCharts';
+import clientKeys from '@/modules/client/hooks/clientKeys';
+import useGetCurrentClient from '@/modules/client/hooks/useGetCurrentClient';
+import useListClientCharts from '@/modules/client/hooks/useListClientCharts';
 import restaurantKeys from '@/modules/restaurant/hooks/restaurantKeys';
 import styled from '@emotion/styled';
 import { useSnackbar } from 'notistack';
@@ -39,6 +41,15 @@ const QRConfigContainer = styled(Paper)`
 
   ${({ theme }) => theme.breakpoints.down('sm')} {
     padding-inline: 2rem;
+  }
+`;
+
+const UserName = styled(Typography)`
+  font-size: 1.2rem;
+  text-align: center;
+
+  ${({ theme }) => theme.breakpoints.down('sm')} {
+    font-size: 1rem;
   }
 `;
 
@@ -74,11 +85,18 @@ const RecentList = styled(List)`
 const Dashboard = () => {
   const router = useRouter();
 
-  const questionsQuery = uselistClientCharts(
-    { user: '649268553f1d32d9c2368069' },
-    {}
-  );
-  const questions = questionsQuery.data?.data || [];
+  const theme = useTheme();
+  const small = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const queryClient = useQueryClient();
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const currentQuery = useGetCurrentClient();
+  const currentData = currentQuery.data?.data;
+
+  const questionsQuery = useListClientCharts();
+  const questions = questionsQuery.data?.data.charts || [];
 
   const recentForms = questions.map(
     (question) =>
@@ -87,18 +105,19 @@ const Dashboard = () => {
       new Date(question.date).toLocaleDateString()
   );
 
-  const theme = useTheme();
-  const small = useMediaQuery(theme.breakpoints.down('sm'));
-
-  const queryClient = useQueryClient();
-
-  const { enqueueSnackbar } = useSnackbar();
-
   const logoutMutation = useLogout();
 
   const handleLogout = async () => {
     try {
-      await queryClient.removeQueries({ queryKey: restaurantKeys.currentKey });
+      await queryClient.removeQueries([
+        restaurantKeys.currentKey,
+        clientKeys.currentKey,
+      ]);
+
+      await queryClient.invalidateQueries([
+        restaurantKeys.currentKey,
+        clientKeys.currentKey,
+      ]);
 
       await logoutMutation.mutateAsync();
 
@@ -142,6 +161,7 @@ const Dashboard = () => {
               }}
             >
               <AccountCircleIcon sx={{ fontSize: '128px' }} />
+              <UserName>{currentData?.name}</UserName>
             </Half>
           </HalfWrapper>
         </QRConfigContainer>

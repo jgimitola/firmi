@@ -15,6 +15,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { STALE_TIME } from '@/lib/constants';
 import useLogin from '@/modules/auth/hooks/useLogin';
 import isAuth from '@/modules/auth/lib/isAuth';
+import getCurrentClient from '@/modules/client/controllers/getCurrentClient';
+import clientKeys from '@/modules/client/hooks/clientKeys';
 import NextLink from '@/modules/components/Link';
 import getCurrentRestaurant from '@/modules/restaurant/controllers/getCurrentRestaurant';
 import restaurantKeys from '@/modules/restaurant/hooks/restaurantKeys';
@@ -94,6 +96,12 @@ const Login = (users) => {
         const { restId } = router.query;
 
         if (restId) return router.push(`/form/registered/${restId}`);
+
+        await queryClient.prefetchQuery(
+          clientKeys.currentKey,
+          () => getCurrentClient(),
+          { staleTime: STALE_TIME, cacheTime: STALE_TIME }
+        );
 
         router.push('/private/client/dashboard');
       }

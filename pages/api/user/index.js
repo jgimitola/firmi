@@ -1,28 +1,41 @@
 import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
+import isAuth from '@/modules/auth/lib/isAuth';
 
 export default async function handler(req, res) {
   await dbConnect();
 
-  // POST /api/user
+  const token = req.cookies['firmi-cookie'];
 
-  if (req.method === 'POST') {
-    try {
+  try {
+    const { decoded } = await isAuth(token);
+
+    if (req.method === 'POST') {
       const user = await User.create(req.body);
-      res.status(201).json({ success: true, data: user });
-    } catch (error) {
-      res.status(400).json({ success: false });
+
+      return res.status(201).json({ success: true, messages: [], data: user });
     }
-  }
 
-  // GET /api/user
+    if (req.method === 'GET') {
+      if (token) {
+        const user = await User.findOne({ _id: decoded._id }, '-password');
 
-  if (req.method === 'GET') {
-    try {
+        return res
+          .status(200)
+          .json({ success: true, messages: [], data: user });
+      }
+
       const users = await User.find({});
-      res.status(200).json({ success: true, data: users });
-    } catch (error) {
-      res.status(400).json({ success: false });
+
+      return res.status(200).json({ success: true, messages: [], data: users });
     }
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      messages: ['Unexpected error'],
+      data: null,
+    });
   }
 }
