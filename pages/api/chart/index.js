@@ -1,6 +1,7 @@
 import dbConnect from '@/lib/dbConnect';
 import Answer from '@/models/Answer';
 import Chart from '@/models/Chart';
+import isAuth from '@/modules/auth/lib/isAuth';
 
 export default async function handler(req, res) {
   await dbConnect();
@@ -24,19 +25,19 @@ export default async function handler(req, res) {
 
       const { answers } = req.body;
 
-      answers.forEach(async (ans) => {
-        const { question, value } = ans;
-
+      const answersArray = [];
+      for (let i = 0; i < answers.length; i++) {
         const answer = await Answer.create({
-          question,
-          value,
-          chart,
+          chart: chart._id,
+          question: answers[i].question,
+          value: answers[i].value,
         });
-      });
+        answersArray.push(answer);
+      }
 
-      res.status(201).json({ success: true, data: chart });
+      res.status(201).json({ success: true, data: {chart, answersArray}, messages: ["Chart created successfully"]});
     } catch (error) {
-      res.status(400).json({ success: false });
+      res.status(400).json({ success: false, messages: ["Error creating chart"], data: error });
     }
   }
 

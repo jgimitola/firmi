@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { useRouter } from 'next/router';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -9,9 +11,9 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Typography from '@mui/material/Typography';
 
+import useAnswerChart from '@/modules/chart/hooks/useAnswerChart';
 import useListBoolQuestions from '@/modules/question/hooks/useListBoolQuestions';
 import styled from '@emotion/styled';
-import useAnswerChart from '@/modules/chart/hooks/useAnswerChart';
 
 const Main = styled(Box)`
   height: 100svh;
@@ -45,8 +47,12 @@ const Options = styled(RadioGroup)`
 `;
 
 const UnregisteredForm = () => {
+  const router = useRouter();
+
   const questionsQuery = useListBoolQuestions({}, {});
   const questions = questionsQuery.data?.data || [];
+
+  const restaurant = router?.query?.rstId;
 
   const answerMutation = useAnswerChart();
 
@@ -72,12 +78,16 @@ const UnregisteredForm = () => {
       const question = questions.find((question) => question.key === key);
       return {
         questionId: question._id,
-        answer: value,
+        value: +value,
       };
     });
 
-    console.log(arr2);
-    // await answerMutation.mutateAsync(answers);
+    const res = await answerMutation.mutateAsync({
+      answers: arr2,
+      restaurant,
+    });
+
+    console.log(res);
   };
 
   const buttonDisabled = Object.entries(answers).reduce(
